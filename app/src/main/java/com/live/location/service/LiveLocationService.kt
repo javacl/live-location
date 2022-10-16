@@ -6,6 +6,7 @@ import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.provider.Settings
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -15,6 +16,8 @@ import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
 import com.live.location.R
 import com.live.location.domain.GetLiveLocationUseCase
+import com.live.location.model.LiveLocationModel
+import com.squareup.moshi.Moshi
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -34,6 +37,9 @@ class LiveLocationService : LifecycleService() {
 
     @Inject
     lateinit var okHttpClient: OkHttpClient
+
+    @Inject
+    lateinit var moshi: Moshi
 
     private var mWebSocket: WebSocket? = null
 
@@ -94,8 +100,8 @@ class LiveLocationService : LifecycleService() {
 
     private fun start() {
         val notification = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
-            .setContentTitle("Tracking Location...")
-            .setContentText("Waiting for location...")
+            .setContentTitle("Live Location")
+            .setContentText("Location sharing in progress")
             .setSmallIcon(R.drawable.ic_launcher_background)
             .setDefaults(Notification.DEFAULT_ALL)
             .setPriority(NotificationCompat.PRIORITY_MAX)
@@ -118,18 +124,31 @@ class LiveLocationService : LifecycleService() {
 
         notificationManager.notify(NOTIFICATION_ID, notification.build())
 
+        val deviceId = Settings.Secure.getString(
+            applicationContext.contentResolver,
+            Settings.Secure.ANDROID_ID
+        )
+
         liveLocation()
             .catch { e -> e.printStackTrace() }
             .onEach { location ->
+
                 location?.let {
-                    val lat = it.latitude.toString()
-                    val lng = it.longitude.toString()
+
+                    val text = moshi.adapter(LiveLocationModel::class.java).toJson(
+                        LiveLocationModel(
+                            lat = it.latitude,
+                            lng = it.longitude,
+                            time = System.currentTimeMillis(),
+                            deviceId = deviceId
+                        )
+                    )
+                    mWebSocket?.send(text)
+
                     val updatedNotification = notification.setContentText(
-                        "Location: ($lat , $lng)"
+                        "Location: (${it.latitude} , ${it.longitude})"
                     )
                     notificationManager.notify(NOTIFICATION_ID, updatedNotification.build())
-
-                    mWebSocket?.send("Location: ($lat , $lng)")
                 }
             }.launchIn(lifecycleScope)
 

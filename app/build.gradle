@@ -107,6 +107,10 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp")
     implementation("com.squareup.okhttp3:logging-interceptor")
 
+    // Moshi Kotlin
+    def moshi_version = "1.14.0"
+    implementation "com.squareup.moshi:moshi-kotlin:$moshi_version"
+
     // Test
     testImplementation "junit:junit:4.13.2"
     androidTestImplementation "androidx.test.ext:junit:1.1.3"

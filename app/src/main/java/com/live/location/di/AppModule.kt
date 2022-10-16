@@ -3,7 +3,10 @@ package com.live.location.di
 import android.content.Context
 import com.google.android.gms.location.LocationServices
 import com.live.location.BuildConfig
+import com.live.location.api.DefaultIfNullFactory
 import com.live.location.api.TLSSocketFactory
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -32,6 +35,15 @@ class AppModule {
     fun provideLocationSettingClient(
         @ApplicationContext context: Context
     ) = LocationServices.getSettingsClient(context)
+
+    @Singleton
+    @Provides
+    fun provideMoshi(): Moshi {
+        return Moshi.Builder()
+            .add(DefaultIfNullFactory())
+            .addLast(KotlinJsonAdapterFactory())
+            .build()
+    }
 
     @Singleton
     @Provides

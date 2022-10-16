@@ -44,7 +44,7 @@ class LiveLocationService : LifecycleService() {
     private var mWebSocket: WebSocket? = null
 
     private val webSocketRequest by lazy {
-        Request.Builder().url("ws://auto.ecobin.ir:40510").build()
+        Request.Builder().url("ws://auto.ecobin.ir:9101").build()
     }
 
     private val webSocketListener by lazy {

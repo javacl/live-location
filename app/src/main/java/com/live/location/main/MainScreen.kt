@@ -155,8 +155,8 @@ fun checkLocationSetting(
     }
 
     val client: SettingsClient = LocationServices.getSettingsClient(context)
-    val builder: LocationSettingsRequest.Builder = LocationSettingsRequest
-        .Builder()
+
+    val builder = LocationSettingsRequest.Builder()
         .addLocationRequest(locationRequest)
 
     val gpsSettingTask: Task<LocationSettingsResponse> =

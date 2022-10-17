@@ -3,7 +3,6 @@ package com.live.location.domain
 import android.annotation.SuppressLint
 import android.os.Looper
 import com.google.android.gms.location.*
-import com.google.android.gms.tasks.Task
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.callbackFlow
 import javax.inject.Inject
@@ -15,11 +14,10 @@ class GetLiveLocationUseCase @Inject constructor(
     @SuppressLint("MissingPermission")
     operator fun invoke() = callbackFlow {
 
-        val interval = 5000L
-
         val locationRequest = LocationRequest.create().apply {
-            this.interval = interval
-            this.fastestInterval = interval
+            this.interval = 5000
+            this.fastestInterval = 1000
+            this.priority = Priority.PRIORITY_HIGH_ACCURACY
         }
 
         val locationRequestBuilder = LocationSettingsRequest.Builder()
@@ -32,8 +30,7 @@ class GetLiveLocationUseCase @Inject constructor(
             }
         }
 
-        val task: Task<LocationSettingsResponse> =
-            settingsClient.checkLocationSettings(locationRequestBuilder.build())
+        val task = settingsClient.checkLocationSettings(locationRequestBuilder.build())
 
         task.addOnSuccessListener {
             fusedLocationClient.requestLocationUpdates(

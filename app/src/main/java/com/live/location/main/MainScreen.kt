@@ -72,7 +72,6 @@ fun MainScreen() {
         needCheckLocationSetting = false
     }
 
-
     Column(
         modifier = Modifier
             .fillMaxSize()

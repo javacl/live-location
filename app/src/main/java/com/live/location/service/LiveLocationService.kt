@@ -1,8 +1,8 @@
 package com.live.location.service
 
-import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
@@ -103,15 +103,25 @@ class LiveLocationService : LifecycleService() {
             .setContentTitle("Live Location")
             .setContentText("Location sharing in progress")
             .setSmallIcon(R.drawable.ic_launcher_background)
-            .setDefaults(Notification.DEFAULT_ALL)
-            .setPriority(NotificationCompat.PRIORITY_MAX)
             .setOngoing(true)
+            .setCategory(NotificationCompat.CATEGORY_SERVICE)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
+            .setSilent(true)
+            .setContentIntent(
+                PendingIntent.getActivity(
+                    this,
+                    0,
+                    packageManager.getLaunchIntentForPackage(packageName),
+                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                )
+            )
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
                 NOTIFICATION_CHANNEL_ID,
                 "Location",
-                NotificationManager.IMPORTANCE_HIGH,
+                NotificationManager.IMPORTANCE_DEFAULT,
             )
             val notificationManager =
                 getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager

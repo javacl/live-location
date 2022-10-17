@@ -15,9 +15,11 @@ class GetLiveLocationUseCase @Inject constructor(
     @SuppressLint("MissingPermission")
     operator fun invoke() = callbackFlow {
 
+        val interval = 5000L
+
         val locationRequest = LocationRequest.create().apply {
-            interval = 1000
-            fastestInterval = 1000
+            this.interval = interval
+            this.fastestInterval = interval
         }
 
         val locationRequestBuilder = LocationSettingsRequest.Builder()

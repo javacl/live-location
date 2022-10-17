@@ -181,25 +181,28 @@ class LiveLocationService : LifecycleService() {
             if (retry) {
                 delay(3000)
             }
-            okHttpClient.apply {
-                mWebSocket = newWebSocket(webSocketRequest, webSocketListener)
-            }
+            mWebSocket = okHttpClient.newWebSocket(webSocketRequest, webSocketListener)
         }
     }
 
     private fun closeWebSocketConnection() {
         lifecycleScope.launch(Dispatchers.IO) {
-            mWebSocket?.close(1000, "serviceDestroyed")
+            mWebSocket?.close(1000, WEB_SOCKET_CLOSE_REASON)
             mWebSocket = null
         }
     }
 
     companion object {
-        const val WEB_SOCKET_TAG = "WebSocket"
+        const val WEB_SOCKET_TAG = "WEB_SOCKET"
+        const val WEB_SOCKET_CLOSE_REASON = "SERVICE_DESTROYED"
+
         const val NOTIFICATION_ID = 1
+        const val NOTIFICATION_CHANNEL_ID = "LIVE_LOCATION"
+
         const val ACTION_START = "ACTION_START"
         const val ACTION_STOP = "ACTION_STOP"
-        const val NOTIFICATION_CHANNEL_ID = "location"
+
+
         var liveLocationServiceIsRunning by mutableStateOf(false)
     }
 }

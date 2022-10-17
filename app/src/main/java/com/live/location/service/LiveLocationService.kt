@@ -181,7 +181,10 @@ class LiveLocationService : LifecycleService() {
             if (retry) {
                 delay(3000)
             }
-            mWebSocket = okHttpClient.newWebSocket(webSocketRequest, webSocketListener)
+            mWebSocket = okHttpClient.newWebSocket(
+                webSocketRequest,
+                webSocketListener
+            )
         }
     }
 

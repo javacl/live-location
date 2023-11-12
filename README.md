@@ -1,2 +1,2 @@
 # Live location
-A sample project to send live location with WebSocket in foreground service.
+A sample project to send live location with WebSocket in foreground service with JetpackCompose.
